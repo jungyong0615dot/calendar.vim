@@ -270,6 +270,9 @@ function! s:self.action(action) dict abort
   endif
   let self.action_name = action
   let ret = self.view.action(action)
+  if index([ 'show_description' ], action) >= 0
+    return 1
+  endif
   if type(ret) == type(0) && ret == 0
     call self.update()
   endif

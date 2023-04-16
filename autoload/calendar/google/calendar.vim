@@ -230,6 +230,18 @@ function! calendar#google#calendar#getEvents(year, month, ...) abort
                 \ , 'ymd': ymd[:2]
                 \ , 'endhms': endymd[3:]
                 \ , 'endymd': endymd[:2] }))
+
+
+          " let b:itm = itm
+lua << EOF
+  -- if vim.b.itm.creator ~= nil then
+  --   if string.find(vim.b.itm.creator.email, 'moloco.com') then
+  --     vim.fn.writefile({vim.json.encode(vim.b.itm)}, "/Users/jungyong/Jungyong/tmp/cal/hihi.json")
+  --   end
+  -- end
+EOF
+          " unlet! b:itm
+
           if isHoliday
             let events[date].holiday = events[date].events[-1].summary
             let events[date].hasHoliday = 1
@@ -514,7 +526,7 @@ function! calendar#google#calendar#insert(calendarId, title, start, end, year, m
         \ 'calendar#google#calendar#insert_response',
         \ calendar#google#calendar#get_url('calendars/' . s:event_cache.escape(a:calendarId) . '/events'),
         \ { 'calendarId': a:calendarId },
-        \ extend({ 'summary': a:title, 'start': start, 'end': end, 'transparency': 'transparent' }, opt))
+        \ extend({ 'summary': a:title, 'start': start, 'end': end, 'transparency': 'transparent'}, opt))
 endfunction
 
 function! calendar#google#calendar#insert_response(id, response) abort

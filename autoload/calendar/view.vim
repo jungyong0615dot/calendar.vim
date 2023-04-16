@@ -262,6 +262,7 @@ function! s:self.action(action) dict abort
   if type(ret) == 0 && ret == 0
     if a:action ==# 'redraw'
       call b:calendar.update_force_redraw()
+      echom "Refreshed"
       return 1
     elseif a:action ==# 'tab'
       if self.view_count() > 1 && !self.current_view().on_top()
@@ -390,6 +391,13 @@ function! s:self.action(action) dict abort
         let self.order = self._event_order
         let self._event = 0
       endif
+
+lua << EOF
+    -- vim.pretty_print(vim.b.calendar.event)
+    -- vim.pretty_print(vim.b.calendar.view.order)
+    -- vim.pretty_print(vim.b.calendar.view._event)
+EOF
+
     elseif a:action ==# 'close_event'
       if self._event
         call self.action('event')

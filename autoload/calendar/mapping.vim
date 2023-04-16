@@ -41,6 +41,7 @@ function! calendar#mapping#new() abort
         \ 'scroll_center_head', 'scroll_center', 'scroll_bottom_head', 'scroll_bottom',
         \ 'add', 'subtract', 'status', 'plus', 'minus', 'task', 'event', 'close_task', 'close_event',
         \ 'delete', 'delete_line', 'yank', 'yank_line', 'change', 'change_line',
+        \ 'show_description',
         \ 'undo', 'undo_line', 'tab', 'shift_tab', 'next_match', 'prev_match',
         \ 'today', 'enter', 'view_left',  'view_right', 'redraw', 'clear', 'help', 'hide', 'exit',
         \ 'visual', 'visual_line', 'visual_block', 'exit_visual',
@@ -171,6 +172,7 @@ function! calendar#mapping#new() abort
   " change
   nmap <buffer> c <Plug>(calendar_change)
   nmap <buffer> C <Plug>(calendar_change_line)
+  nmap <buffer> <leader>C <Plug>(calendar_show_description)
 
   " utility
   nmap <buffer> <Undo> <Plug>(calendar_undo)
@@ -196,7 +198,7 @@ function! calendar#mapping#new() abort
   nmap <buffer> <C-r> <Plug>(calendar_redraw)
   nmap <buffer> L <Plug>(calendar_clear)
   nmap <buffer> ? <Plug>(calendar_help)
-  nmap <buffer> q <Plug>(calendar_hide)
+  " nmap <buffer> q <Plug>(calendar_hide)
   nmap <buffer> Q <Plug>(calendar_exit)
 
   " nop

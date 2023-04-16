@@ -32,7 +32,7 @@ function! s:instance.on_resize() dict abort
   let h = max([(self.sizey() - 3) / 6, 1])
   let self.view.week_count = 5
   let self.view.dayheight = h < 3 ? h : max([(self.sizey() - 3) / max([self.view.week_count, 5]), 1])
-  let self.view.hourheight = max([(self.sizey() - self.view.dayheight) / 24, 3])
+  let self.view.hourheight = max([(self.sizey() - self.view.dayheight) / 24, 6])
   let self.view.blockmin = 60 / (self.view.hourheight - 1)
   if !(self.view.width > 3 && self.view.dayheight > 1)
     let self.frame = calendar#setting#get('frame_space')
@@ -397,12 +397,18 @@ function! s:instance.set_contents() dict abort
                 let style = time_events[timestr][ii][1]
                 if style ==# 'top' || style ==# 'single'
                   let eventsummary = get(tevts[ii], 'summary', '')
+                  let eventstart = get(tevts[ii], 'starttime', '')
+                  let eventend = get(tevts[ii], 'endtime', '')
+
+
                   let smallspace = repeat(' ', f.width - 1 - (strdisplaywidth(eventsummary) + f.width - 1) % f.width)
-                  call add(texts, calendar#string#truncate(eventsummary . smallspace . repeat(f.horizontal, l), l - f.width) . (style ==# 'top' ? f.topright : f.horizontal))
+                  call add(texts, calendar#string#truncate(eventstart . ' ' . eventsummary . smallspace . repeat(f.horizontal, l), l - f.width) . (style ==# 'top' ? f.topright : f.horizontal))
                   let xx += l / f.width * f.strlen + f.strlen
                 else
                   let border = style ==# 'empty' ? repeat(repeat(' ', f.width), 2) : style ==# 'middle' ? repeat([f.vertical], 2) : [f.bottomleft, f.bottomright]
-                  call add(texts, border[0] . repeat(style =~# 'empty\|middle' ? repeat(' ', f.width) : f.horizontal, l / f.width - 2) . border[1])
+                  " call add(texts, border[0] . repeat(style =~# 'empty\|middle' ? repeat(' ', f.width) : f.horizontal, l / f.width - 2) . border[1])
+                  call add(texts, calendar#string#truncate((style =~# 'empty\|middle' ? border[0] : eventend) . repeat(style =~# 'empty\|middle' ? repeat(' ', f.width) : f.horizontal, l / f.width - 2), l - f.width) . border[1])
+
                   if style ==# 'empty'
                     let xx += l / f.width * f.strlen + f.strlen
                   else

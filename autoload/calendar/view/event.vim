@@ -124,12 +124,67 @@ function! s:self.action(action) dict abort
     if calendarId !=# '' && (calendar#setting#get('skip_event_delete_confirm') || input(calendar#message#get('delete_event')) =~# '\c^y\%[es]$')
       call b:calendar.event.delete(calendarId, eventid, year, month)
     endif
+  elseif index(['show_description'], a:action) >= 0
+    let show_desc = index(['show_description'], a:action) >= 0
+    let b:desc = show_desc ? get(event, 'description', '') : ''
+    if b:desc !=# ''
+lua << EOF
+
+	local width = vim.api.nvim_get_option("columns")
+	local height = vim.api.nvim_get_option("lines")
+	local win_height = math.ceil(height * 0.7 - 4)
+	local win_width = math.ceil(width * 0.7)
+	local row = math.ceil((height - win_height) / 2 - 1)
+	local col = math.ceil((width - win_width) / 2)
+	local buf = vim.api.nvim_create_buf(true, true)
+
+	vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(vim.b.desc, "\n"))
+	vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+	vim.b[buf].parent_buf = vim.api.nvim_get_current_buf()
+	local _ = vim.api.nvim_open_win(buf, true, {
+		style = "minimal",
+		relative = "editor",
+		row = row,
+		col = col,
+		width = win_width,
+		height = win_height,
+		border = "rounded",
+	})
+	vim.w.is_floating_scratch = true
+
+  vim.b.calendar = {view = {}}
+
+  vim.b.calendar.visual_mode = function()
+    return false
+  end
+  vim.b.calendar.view.help_visible = function()
+    return false
+  end
+  vim.b.calendar.view.event_visible = function()
+    return false
+  end
+  vim.b.calendar.view.task_visible = function()
+    return false
+  end
+  vim.b.calendar.view.action = function(action)
+    return true
+  end
+
+EOF
+    endif
   elseif index(['start_insert', 'start_insert_append', 'start_insert_head', 'start_insert_last', 'change', 'change_line'], a:action) >= 0
     if eventid !=# '' && calendarId !=# ''
       let head = index(['start_insert', 'start_insert_head'], a:action) >= 0
       let change = index(['change', 'change_line'], a:action) >= 0
       let msg = calendar#message#get('input_event') . (change ? get(event, 'summary', get(event, 'title', '')) . ' -> ' : '')
-      let title = input(msg, change ? '' : get(event, 'summary', get(event, 'title', '')) . (head ? "\<Home>" : ''))
+
+      let starttime = get(event, 'starttime', '')
+      let starthms = get(event, 'hms', {})
+      let endtime = get(event, 'endtime', '')
+      let endhms = get(event, 'endhms', {})
+      let time_msg = starttime !=# '' ?  printf('%d:%02d', starthms[0], starthms[1]) . ' - ' . printf('%d:%02d', endhms[0], endhms[1]) . ' ': ''
+
+      let title = input(msg, change ? '' : time_msg . get(event, 'summary', get(event, 'title', '')) . (head ? "\<Home>" : ''))
       if title !=# ''
         let [title, startdate, enddate, recurrence] = calendar#view#event#parse_title(title, 0)
         let opt = {}

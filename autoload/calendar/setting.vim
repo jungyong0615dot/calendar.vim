@@ -150,8 +150,8 @@ function! s:view_source() abort
         \ , 'top': '(calendar#util#winheight() - self.height()) / 2'
         \ , 'on_top': '1'
         \ , 'position': 'absolute'
-        \ , 'maxwidth': 'max([calendar#util#winwidth() / 3, 15])'
-        \ , 'maxheight': 'max([calendar#util#winheight() / 2, 3])'
+        \ , 'maxwidth': '2 * max([calendar#util#winwidth() / 3, 15])'
+        \ , 'maxheight': '2 * max([calendar#util#winheight() / 2, 3])'
         \ , 'visible': 'b:calendar.view.event_visible() && b:calendar.view.get_calendar_views() !~# "clock\\|event\\|agenda"'
         \ },
         \ { 'type': 'task'
